@@ -1,5 +1,5 @@
-defmodule Nebulex.Cache.KVPropTest do
-  import Nebulex.CacheCase
+defmodule Knock.Nebulex.Cache.KVPropTest do
+  import Knock.Nebulex.CacheCase
 
   deftests do
     use ExUnitProperties
@@ -18,7 +18,7 @@ defmodule Nebulex.Cache.KVPropTest do
           assert cache.fetch!(term) == "replaced"
 
           assert cache.take!(term) == "replaced"
-          assert {:error, %Nebulex.KeyError{key: key}} = cache.take(term)
+          assert {:error, %Knock.Nebulex.KeyError{key: key}} = cache.take(term)
           assert key == term
 
           assert cache.put_new!(term, term) == true

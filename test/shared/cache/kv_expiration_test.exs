@@ -1,8 +1,8 @@
-defmodule Nebulex.Cache.KVExpirationTest do
-  import Nebulex.CacheCase
+defmodule Knock.Nebulex.Cache.KVExpirationTest do
+  import Knock.Nebulex.CacheCase
 
   deftests do
-    import Nebulex.CacheCase,
+    import Knock.Nebulex.CacheCase,
       only: [t_sleep: 1, rand_int: 0, rand_int: 1, rand_str: 0, rand_str: 1, assert_eventually: 1]
 
     describe ":ttl option on" do
@@ -71,7 +71,7 @@ defmodule Nebulex.Cache.KVExpirationTest do
         _ = t_sleep(ttl + 100)
 
         assert_eventually do
-          assert {:error, %Nebulex.KeyError{key: "take with ttl"}} = cache.take("take with ttl")
+          assert {:error, %Knock.Nebulex.KeyError{key: "take with ttl"}} = cache.take("take with ttl")
         end
       end
 
@@ -83,7 +83,7 @@ defmodule Nebulex.Cache.KVExpirationTest do
         _ = t_sleep(ttl + 100)
 
         assert_eventually do
-          assert_raise Nebulex.KeyError, ~r"key \"take! with ttl\"", fn ->
+          assert_raise Knock.Nebulex.KeyError, ~r"key \"take! with ttl\"", fn ->
             cache.take!("take! with ttl")
           end
         end
@@ -180,16 +180,16 @@ defmodule Nebulex.Cache.KVExpirationTest do
         _ = t_sleep(ttl + t + 10)
 
         assert_eventually do
-          assert {:error, %Nebulex.KeyError{key: :ttl!}} = cache.ttl(:ttl!)
+          assert {:error, %Knock.Nebulex.KeyError{key: :ttl!}} = cache.ttl(:ttl!)
         end
 
         assert cache.ttl!(:infinity_ttl) == :infinity
       end
 
-      test "raises Nebulex.KeyError if key does not exist", %{cache: cache} do
+      test "raises Knock.Nebulex.KeyError if key does not exist", %{cache: cache} do
         msg = ~r/key :non_existent not found/
 
-        assert_raise Nebulex.KeyError, msg, fn ->
+        assert_raise Knock.Nebulex.KeyError, msg, fn ->
           cache.ttl!(:non_existent)
         end
       end
@@ -263,7 +263,7 @@ defmodule Nebulex.Cache.KVExpirationTest do
         _ = t_sleep(ttl + t)
 
         assert_eventually do
-          assert {:error, %Nebulex.KeyError{key: ^key}} = cache.ttl(key)
+          assert {:error, %Knock.Nebulex.KeyError{key: ^key}} = cache.ttl(key)
         end
 
         assert cache.put!(key, 11, ttl: 1000) == :ok

@@ -1,7 +1,7 @@
 # Declarative Caching: Patterns and Best Practices
 
 This guide provides comprehensive examples and best practices for using
-Nebulex's caching decorators. While the `Nebulex.Caching.Decorators`
+Nebulex's caching decorators. While the `Knock.Nebulex.Caching.Decorators`
 documentation covers all options and basic usage, this guide focuses on
 real-world scenarios, adapter-specific optimizations, and advanced patterns.
 
@@ -33,7 +33,7 @@ Then enable caching decorators in your module:
 
 ```elixir
 defmodule MyApp.Products do
-  use Nebulex.Caching,
+  use Knock.Nebulex.Caching,
     cache: MyApp.Cache,
     on_error: :nothing
 
@@ -54,7 +54,7 @@ functions in the module:
 ## Quick Start: Basic Usage
 
 Let's start with a simple product catalog to illustrate the basics. For complete
-API documentation on all three decorators, see `Nebulex.Caching.Decorators`.
+API documentation on all three decorators, see `Knock.Nebulex.Caching.Decorators`.
 
 ### Reading with `@cacheable`
 
@@ -115,7 +115,7 @@ end
 
 The `cache_evict` decorator supports several powerful patterns for
 cache invalidation. For detailed API documentation and option reference, see
-[`cache_evict/3`](`Nebulex.Caching.Decorators.cache_evict/3`).
+[`cache_evict/3`](`Knock.Nebulex.Caching.Decorators.cache_evict/3`).
 
 ### Evicting Multiple Keys
 
@@ -137,11 +137,11 @@ depends on your cache adapter.
 > #### Adapter-specific queries {: .warning}
 >
 > Query syntax varies by adapter. The examples in this guide use
-> `Nebulex.Adapters.Local`, which supports ETS match specifications.
+> `Knock.Nebulex.Adapters.Local`, which supports ETS match specifications.
 > For other adapters, consult their documentation.
 
 ```elixir
-use Nebulex.Adapters.Local.QueryHelper
+use Knock.Nebulex.Adapters.Local.QueryHelper
 
 @decorate cache_evict(query: &query_for_category/1)
 def delete_category_products(category_id) do
@@ -163,7 +163,7 @@ You can now use both `:key` and `:query` together for hierarchical eviction:
 
 ```elixir
 # Using QueryHelper for cleaner syntax
-use Nebulex.Adapters.Local.QueryHelper
+use Knock.Nebulex.Adapters.Local.QueryHelper
 
 @decorate cache_evict(
             key: category_id,
@@ -201,28 +201,28 @@ end
 
 ---
 
-## Working with Nebulex.Adapters.Local
+## Working with Knock.Nebulex.Adapters.Local
 
-The `Nebulex.Adapters.Local` adapter provides several powerful features for
+The `Knock.Nebulex.Adapters.Local` adapter provides several powerful features for
 working with cached data. This section covers features introduced in recent
 versions that make cache management more intuitive and maintainable.
 
 For complete API documentation, see the
-["Local Adapter: Advanced Reference Eviction"](`m:Nebulex.Caching.Decorators#cache_evict/3-local-adapter-advanced-reference-eviction`)
+["Local Adapter: Advanced Reference Eviction"](`m:Knock.Nebulex.Caching.Decorators#cache_evict/3-local-adapter-advanced-reference-eviction`)
 section in `cache_evict/3`.
 
 ### Building Queries with QueryHelper
 
-The `Nebulex.Adapters.Local.QueryHelper` module provides a user-friendly DSL
+The `Knock.Nebulex.Adapters.Local.QueryHelper` module provides a user-friendly DSL
 for building ETS match specifications without writing verbose tuples.
 
-> #### New in `Nebulex.Adapters.Local` v3.0.0 {: .tip}
+> #### New in `Knock.Nebulex.Adapters.Local` v3.0.0 {: .tip}
 >
 > The QueryHelper makes writing queries much more readable and
 > maintainable. See the [QueryHelper documentation][query_helper_docs]
 > for more details.
 
-[query_helper_docs]: https://hexdocs.pm/nebulex_local/Nebulex.Adapters.Local.QueryHelper.html
+[query_helper_docs]: https://hexdocs.pm/nebulex_local/Knock.Nebulex.Adapters.Local.QueryHelper.html
 
 **Without QueryHelper (raw match spec):**
 
@@ -241,7 +241,7 @@ end
 **With QueryHelper (user-friendly DSL):**
 
 ```elixir
-use Nebulex.Adapters.Local.QueryHelper
+use Knock.Nebulex.Adapters.Local.QueryHelper
 
 defp query_for_category(%{args: [category_id]}) do
   match_spec value: %{category_id: cat_id},
@@ -254,7 +254,7 @@ end
 **More complex examples:**
 
 ```elixir
-use Nebulex.Adapters.Local.QueryHelper
+use Knock.Nebulex.Adapters.Local.QueryHelper
 
 # Match products in a category with price > 100
 defp query_expensive_products(%{args: [category_id]}) do
@@ -282,7 +282,7 @@ end
 Entry tagging allows you to logically group cache entries for easier
 management and bulk operations.
 
-> #### New in `Nebulex.Adapters.Local` v3.0.0 {: .tip}
+> #### New in `Knock.Nebulex.Adapters.Local` v3.0.0 {: .tip}
 >
 > Tags provide a way to organize and invalidate groups of related
 > entries. See the [Local adapter documentation][local_adapter_docs]
@@ -311,7 +311,7 @@ MyCache.put(
 **Querying by tags:**
 
 ```elixir
-use Nebulex.Adapters.Local.QueryHelper
+use Knock.Nebulex.Adapters.Local.QueryHelper
 
 # Evict all entries with the :featured tag
 @decorate cache_evict(query: &query_by_tag/1)
@@ -363,16 +363,16 @@ end
 Cache references allow you to store a value once and reference it from
 multiple keys, avoiding data duplication and ensuring consistency.
 
-> #### New in `Nebulex.Adapters.Local` v3.0.0 {: .tip}
+> #### New in `Knock.Nebulex.Adapters.Local` v3.0.0 {: .tip}
 >
 > Reference management is integrated with the Local adapter.
 > See ["Building Match Specs with QueryHelper"][query_helper_section]
 > for more details.
 
-[query_helper_section]: https://hexdocs.pm/nebulex_local/Nebulex.Adapters.Local.html#module-building-match-specs-with-queryhelper
+[query_helper_section]: https://hexdocs.pm/nebulex_local/Knock.Nebulex.Adapters.Local.html#module-building-match-specs-with-queryhelper
 
 For complete API documentation on the `:references` option, see
-[`cacheable/3` - Referenced keys](`m:Nebulex.Caching.Decorators#cacheable/3-referenced-keys`).
+[`cacheable/3` - Referenced keys](`m:Knock.Nebulex.Caching.Decorators#cacheable/3-referenced-keys`).
 
 **Basic reference usage:**
 
@@ -411,7 +411,7 @@ When you have multiple references pointing to the same key, use
 `keyref_match_spec/2` to automatically find and evict all of them:
 
 ```elixir
-use Nebulex.Adapters.Local.QueryHelper
+use Knock.Nebulex.Adapters.Local.QueryHelper
 
 @decorate cacheable(key: id)
 def get_user(id) do
@@ -509,7 +509,7 @@ end
 ### Advanced Reference Cleanup with Tags and Queries
 
 Managing references can be challenging when you have multiple access patterns
-pointing to the same value. The `Nebulex.Adapters.Local` adapter provides two
+pointing to the same value. The `Knock.Nebulex.Adapters.Local` adapter provides two
 powerful strategies to automatically clean up all references without manually
 specifying each one.
 
@@ -521,7 +521,7 @@ entries with that tag in a single operation.
 **Setup:**
 
 ```elixir
-use Nebulex.Adapters.Local.QueryHelper
+use Knock.Nebulex.Adapters.Local.QueryHelper
 
 @decorate cacheable(key: id, opts: [tag: "user"])
 def get_user(id) do
@@ -575,7 +575,7 @@ pointing to a specific key, combined with explicit key eviction.
 **Setup:**
 
 ```elixir
-use Nebulex.Adapters.Local.QueryHelper
+use Knock.Nebulex.Adapters.Local.QueryHelper
 
 @decorate cacheable(key: id)
 def get_user(id) do
@@ -632,7 +632,7 @@ end
 Combine both strategies for the best of both worlds:
 
 ```elixir
-use Nebulex.Adapters.Local.QueryHelper
+use Knock.Nebulex.Adapters.Local.QueryHelper
 
 @decorate cacheable(key: id, opts: [tag: "user"])
 def get_user(id) do
@@ -702,7 +702,7 @@ Start with simple read-through caching for products:
 
 ```elixir
 defmodule MyApp.Catalog do
-  use Nebulex.Caching,
+  use Knock.Nebulex.Caching,
     cache: MyApp.Cache,
     on_error: :nothing
 
@@ -766,7 +766,7 @@ end
 Add categories and use tags for organization:
 
 ```elixir
-use Nebulex.Adapters.Local.QueryHelper
+use Knock.Nebulex.Adapters.Local.QueryHelper
 
 @decorate cacheable(
             key: category_id,
@@ -794,7 +794,7 @@ end
 When deleting a category, evict both the category and all its products:
 
 ```elixir
-use Nebulex.Adapters.Local.QueryHelper
+use Knock.Nebulex.Adapters.Local.QueryHelper
 
 @decorate cache_evict(
             key: category_id,
@@ -825,11 +825,11 @@ Use sessions with automatic expiration and proper cleanup:
 
 ```elixir
 defmodule MyApp.Auth do
-  use Nebulex.Caching,
+  use Knock.Nebulex.Caching,
     cache: MyApp.SessionCache,
     on_error: :nothing
 
-  use Nebulex.Adapters.Local.QueryHelper
+  use Knock.Nebulex.Adapters.Local.QueryHelper
 
   @session_ttl :timer.hours(24)
 
@@ -926,7 +926,7 @@ per user). Use references to avoid storing the same cart data twice:
 
 ```elixir
 defmodule MyApp.Cart do
-  use Nebulex.Caching,
+  use Knock.Nebulex.Caching,
     cache: MyApp.Cache,
     on_error: :nothing
 
@@ -991,11 +991,11 @@ Admin operations often require clearing large portions of the cache:
 
 ```elixir
 defmodule MyApp.Admin do
-  use Nebulex.Caching,
+  use Knock.Nebulex.Caching,
     cache: MyApp.Cache,
     on_error: :raise  # Raise errors for admin operations
 
-  use Nebulex.Adapters.Local.QueryHelper
+  use Knock.Nebulex.Adapters.Local.QueryHelper
 
   # Refresh entire catalog (clear all product caches)
   @decorate cache_evict(
@@ -1110,7 +1110,7 @@ def get_country_by_code(code), do: # ...
 Be mindful of query complexity, especially with large caches:
 
 ```elixir
-use Nebulex.Adapters.Local.QueryHelper
+use Knock.Nebulex.Adapters.Local.QueryHelper
 
 # GOOD: Specific tag lookup (O(n) where n = entries with tag)
 defp query_by_tag(%{args: [tag]}) do
@@ -1135,7 +1135,7 @@ Monitor cache size and implement eviction strategies:
 ```elixir
 # Set max size at cache configuration
 config :my_app, MyApp.Cache,
-  adapter: Nebulex.Adapters.Local,
+  adapter: Knock.Nebulex.Adapters.Local,
   gc_interval: :timer.hours(1),
   max_size: 100_000,
   allocated_memory: 2_000_000_000  # 2GB
@@ -1144,7 +1144,7 @@ config :my_app, MyApp.Cache,
 Use tags to group and evict related entries efficiently:
 
 ```elixir
-use Nebulex.Adapters.Local.QueryHelper
+use Knock.Nebulex.Adapters.Local.QueryHelper
 
 # Evict old sessions periodically
 @decorate cache_evict(
@@ -1270,9 +1270,9 @@ Enable telemetry logging to debug cache behavior:
 ### Recommended Reading
 
 - [Cache Usage Patterns](cache-usage-patterns.md) – Overview of caching patterns.
-- [Nebulex.Caching.Decorators API](`Nebulex.Caching.Decorators`) – Complete API reference.
+- [Knock.Nebulex.Caching.Decorators API](`Knock.Nebulex.Caching.Decorators`) – Complete API reference.
 - [Info API Guide](info-api.md) – Monitoring and observability.
-- [Nebulex.Adapters.Local Documentation](https://hexdocs.pm/nebulex_local) – Local adapter features.
+- [Knock.Nebulex.Adapters.Local Documentation](https://hexdocs.pm/nebulex_local) – Local adapter features.
 
 ---
 

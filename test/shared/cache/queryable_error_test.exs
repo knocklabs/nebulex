@@ -1,12 +1,12 @@
-defmodule Nebulex.Cache.QueryableErrorTest do
-  import Nebulex.CacheCase
+defmodule Knock.Nebulex.Cache.QueryableErrorTest do
+  import Knock.Nebulex.CacheCase
 
   deftests do
-    import Nebulex.CacheCase, only: [assert_error_module: 2, assert_error_reason: 2]
+    import Knock.Nebulex.CacheCase, only: [assert_error_module: 2, assert_error_reason: 2]
 
     describe "get_all/2" do
       test "error: command failed", %{cache: cache} = ctx do
-        assert {:error, %Nebulex.Error{module: module, reason: reason}} =
+        assert {:error, %Knock.Nebulex.Error{module: module, reason: reason}} =
                  cache.get_all()
 
         assert_error_module ctx, module
@@ -14,7 +14,7 @@ defmodule Nebulex.Cache.QueryableErrorTest do
       end
 
       test "error: raises an exception", %{cache: cache} do
-        assert_raise Nebulex.Error, fn ->
+        assert_raise Knock.Nebulex.Error, fn ->
           cache.get_all!()
         end
       end
@@ -22,7 +22,7 @@ defmodule Nebulex.Cache.QueryableErrorTest do
 
     describe "count_all/2" do
       test "error: command failed", %{cache: cache} = ctx do
-        assert {:error, %Nebulex.Error{module: module, reason: reason}} =
+        assert {:error, %Knock.Nebulex.Error{module: module, reason: reason}} =
                  cache.count_all()
 
         assert_error_module ctx, module
@@ -30,7 +30,7 @@ defmodule Nebulex.Cache.QueryableErrorTest do
       end
 
       test "error: raises an exception", %{cache: cache} do
-        assert_raise Nebulex.Error, fn ->
+        assert_raise Knock.Nebulex.Error, fn ->
           cache.count_all!()
         end
       end
@@ -38,7 +38,7 @@ defmodule Nebulex.Cache.QueryableErrorTest do
 
     describe "delete_all/2" do
       test "error: command failed", %{cache: cache} = ctx do
-        assert {:error, %Nebulex.Error{module: module, reason: reason}} =
+        assert {:error, %Knock.Nebulex.Error{module: module, reason: reason}} =
                  cache.delete_all()
 
         assert_error_module ctx, module
@@ -46,7 +46,7 @@ defmodule Nebulex.Cache.QueryableErrorTest do
       end
 
       test "error: raises an exception", %{cache: cache} do
-        assert_raise Nebulex.Error, fn ->
+        assert_raise Knock.Nebulex.Error, fn ->
           cache.delete_all!()
         end
       end
@@ -54,7 +54,7 @@ defmodule Nebulex.Cache.QueryableErrorTest do
 
     describe "stream/2" do
       test "error: command failed", %{cache: cache} = ctx do
-        assert {:error, %Nebulex.Error{module: module, reason: reason}} =
+        assert {:error, %Knock.Nebulex.Error{module: module, reason: reason}} =
                  cache.stream()
 
         assert_error_module ctx, module
@@ -62,7 +62,7 @@ defmodule Nebulex.Cache.QueryableErrorTest do
       end
 
       test "error: raises an exception", %{cache: cache} do
-        assert_raise Nebulex.Error, fn ->
+        assert_raise Knock.Nebulex.Error, fn ->
           cache.stream!()
         end
       end

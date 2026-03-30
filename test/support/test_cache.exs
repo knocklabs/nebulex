@@ -1,4 +1,4 @@
-defmodule Nebulex.TestCache do
+defmodule Knock.Nebulex.TestCache do
   @moduledoc false
 
   defmodule Common do
@@ -16,13 +16,13 @@ defmodule Nebulex.TestCache do
 
   defmodule Cache do
     @moduledoc false
-    use Nebulex.Cache,
-      otp_app: :nebulex,
-      adapter: Nebulex.TestAdapter
+    use Knock.Nebulex.Cache,
+      otp_app: :knock_nebulex,
+      adapter: Knock.Nebulex.TestAdapter
 
-    use Nebulex.TestCache.Common
+    use Knock.Nebulex.TestCache.Common
 
-    import Nebulex.Utils, only: [wrap_error: 2]
+    import Knock.Nebulex.Utils, only: [wrap_error: 2]
 
     ## Extended API - Persistence
 
@@ -61,7 +61,7 @@ defmodule Nebulex.TestCache do
           reason = %File.Error{reason: reason, action: "open", path: path}
           {:current_stacktrace, stacktrace} = Process.info(self(), :current_stacktrace)
 
-          wrap_error Nebulex.Error, reason: reason, stacktrace: stacktrace, cache: cache
+          wrap_error Knock.Nebulex.Error, reason: reason, stacktrace: stacktrace, cache: cache
       end
     end
 
@@ -98,9 +98,9 @@ defmodule Nebulex.TestCache do
 
   defmodule AdapterMock do
     @moduledoc false
-    @behaviour Nebulex.Adapter
-    @behaviour Nebulex.Adapter.KV
-    @behaviour Nebulex.Adapter.Queryable
+    @behaviour Knock.Nebulex.Adapter
+    @behaviour Knock.Nebulex.Adapter.KV
+    @behaviour Knock.Nebulex.Adapter.Queryable
 
     @impl true
     defmacro __before_compile__(_), do: :ok

@@ -1,5 +1,5 @@
 # Enable sleep mock to avoid test delay due to the sleep function (TTL tests)
-:ok = Application.put_env(:nebulex, :sleep_mock, true)
+:ok = Application.put_env(:knock_nebulex, :sleep_mock, true)
 
 # Load support modules
 Code.require_file("support/test_adapter.exs", __DIR__)
@@ -20,8 +20,8 @@ end
 # Mocks
 [
   Mix.Project,
-  Nebulex.Cache.Registry,
-  Nebulex.Time
+  Knock.Nebulex.Cache.Registry,
+  Knock.Nebulex.Time
 ]
 |> Enum.each(&Mimic.copy/1)
 

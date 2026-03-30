@@ -10,9 +10,9 @@ defmodule Mix.Tasks.Nbx.Gen.CacheTest do
 
         assert_file("lib/cache.ex", """
         defmodule Cache do
-          use Nebulex.Cache,
-            otp_app: :nebulex,
-            adapter: Nebulex.Adapters.Local
+          use Knock.Nebulex.Cache,
+            otp_app: :knock_nebulex,
+            adapter: Knock.Nebulex.Adapters.Local
         end
         """)
 
@@ -106,7 +106,7 @@ defmodule Mix.Tasks.Nbx.Gen.CacheTest do
 
   defp config_template do
     """
-    config :nebulex, Cache,
+    config :knock_nebulex, Cache,
       # Sets :shards as backend (defaults to :ets)
       # backend: :shards,
       # GC interval for pushing a new generation (e.g., 12 hrs)

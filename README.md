@@ -14,6 +14,7 @@
 [![Documentation](http://img.shields.io/badge/Documentation-ff69b4)](https://hexdocs.pm/nebulex)
 
 ## 🚀 About
+This is a temporary fork that will allow us to gradually move over to v3 of Knock.Nebulex.
 
 Nebulex provides support for transparently adding caching to existing
 Elixir applications. Like [Ecto][ecto], the caching abstraction allows
@@ -33,7 +34,7 @@ among others.
 [cachex]: https://github.com/whitfin/cachex
 [redis]: https://redis.io/
 [memcached]: https://memcached.org/
-[nbx_caching]: https://hexdocs.pm/nebulex/Nebulex.Caching.Decorators.html
+[nbx_caching]: https://hexdocs.pm/nebulex/Knock.Nebulex.Caching.Decorators.html
 [info_api]: https://hexdocs.pm/nebulex/info-api.html
 [cache_patterns]: https://hexdocs.pm/nebulex/cache-usage-patterns.html
 [cache_topologies]: https://docs.oracle.com/en/middleware/fusion-middleware/coherence/14.1.2/develop-applications/introduction-coherence-caches.html
@@ -47,13 +48,13 @@ among others.
 > and the [official documentation][docs] for the latest stable release.
 
 [getting_started]: https://hexdocs.pm/nebulex/getting-started.html
-[docs]: https://hexdocs.pm/nebulex/Nebulex.html
+[docs]: https://hexdocs.pm/nebulex/Knock.Nebulex.html
 
 ---
 
 ## 📖 Usage
 
-To use Nebulex, add both `:nebulex` and your chosen cache adapter as
+To use Nebulex, add both `:knock_nebulex` and your chosen cache adapter as
 dependencies in your `mix.exs` file.
 
 > _**For more information about available adapters, check out the
@@ -62,12 +63,12 @@ dependencies in your `mix.exs` file.
 [nbx_adapters]: https://hexdocs.pm/nebulex/nbx-adapters.html
 
 For example, to use the Generational Local Cache
-(`Nebulex.Adapters.Local` adapter), add the following to your `mix.exs`:
+(`Knock.Nebulex.Adapters.Local` adapter), add the following to your `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:nebulex, "~> 3.0"},
+    {:knock_nebulex, "~> 3.0"},
     {:nebulex_local, "~> 3.0"}, # Generational local cache adapter
     {:decorator, "~> 1.4"},     # Required for caching decorators
     {:telemetry, "~> 1.3"}      # Required for telemetry events
@@ -94,9 +95,9 @@ corresponding to the chosen dependency. For the local cache, it would be:
 
 ```elixir
 defmodule MyApp.Cache do
-  use Nebulex.Cache,
+  use Knock.Nebulex.Cache,
     otp_app: :my_app,
-    adapter: Nebulex.Adapters.Local
+    adapter: Knock.Nebulex.Adapters.Local
 end
 ```
 
@@ -125,7 +126,7 @@ For more detailed information, see the
 [online documentation][hex-docs].
 
 [getting_started-rc1]: https://hexdocs.pm/nebulex/getting-started.html
-[hex-docs]: https://hexdocs.pm/nebulex/Nebulex.html
+[hex-docs]: https://hexdocs.pm/nebulex/Knock.Nebulex.html
 
 ---
 
@@ -147,9 +148,9 @@ config :my_app, MyApp.Cache,
 
 # Cache definition
 defmodule MyApp.Cache do
-  use Nebulex.Cache,
+  use Knock.Nebulex.Cache,
     otp_app: :my_app,
-    adapter: Nebulex.Adapters.Local
+    adapter: Knock.Nebulex.Adapters.Local
 end
 
 # Ecto schema
@@ -171,7 +172,7 @@ end
 
 # Accounts context with caching
 defmodule MyApp.Accounts do
-  use Nebulex.Caching, cache: MyApp.Cache
+  use Knock.Nebulex.Caching, cache: MyApp.Cache
 
   alias MyApp.Accounts.User
   alias MyApp.Repo
@@ -220,7 +221,7 @@ end
 
 ## 🔗 Important Links
 
-* [Getting Started][getting_started] - Learn how to set up and use Nebulex.
+* [Getting Started][getting_started] - Learn how to set up and use Knock.Nebulex.
 * [Documentation][docs] - Complete API reference.
 * [Upgrading to v3.0][upgrading_to_v3] - Migration guide for v3.0.
 * [Declarative caching][declarative_caching] - Declarative Caching: Patterns
@@ -251,7 +252,7 @@ $ mix test.ci
 ```
 
 The `mix test.ci` command will run the tests, coverage, credo, dialyzer,
-and more. This is the recommended way to test Nebulex.
+and more. This is the recommended way to test Knock.Nebulex.
 
 ---
 
@@ -267,7 +268,7 @@ To run a benchmark test:
 $ mix bench
 ```
 
-> The benchmark uses the `Nebulex.Adapters.Nil` adapter; it is more focused on
+> The benchmark uses the `Knock.Nebulex.Adapters.Nil` adapter; it is more focused on
 > measuring the Nebulex abstraction layer performance rather than a specific
 > adapter.
 

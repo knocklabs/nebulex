@@ -1,8 +1,8 @@
-defmodule Nebulex.Cache.QueryableExpirationTest do
-  import Nebulex.CacheCase
+defmodule Knock.Nebulex.Cache.QueryableExpirationTest do
+  import Knock.Nebulex.CacheCase
 
   deftests do
-    import Nebulex.CacheCase
+    import Knock.Nebulex.CacheCase
 
     describe "expired entries are not matched and returned" do
       test "on: get_all! or stream!", %{cache: cache} do

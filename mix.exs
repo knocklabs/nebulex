@@ -1,4 +1,4 @@
-defmodule Nebulex.MixProject do
+defmodule Knock.Nebulex.MixProject do
   use Mix.Project
 
   @source_url "https://github.com/elixir-nebulex/nebulex"
@@ -6,7 +6,7 @@ defmodule Nebulex.MixProject do
 
   def project do
     [
-      app: :nebulex,
+      app: :knock_nebulex,
       version: @version,
       elixir: "~> 1.12",
       elixirc_paths: elixirc_paths(Mix.env()),
@@ -25,7 +25,7 @@ defmodule Nebulex.MixProject do
       package: package(),
 
       # Docs
-      name: "Nebulex",
+      name: "Knock Nebulex",
       docs: docs()
     ]
   end
@@ -49,7 +49,7 @@ defmodule Nebulex.MixProject do
   def application do
     [
       extra_applications: [:eex],
-      mod: {Nebulex.Application, []}
+      mod: {Knock.Nebulex.Application, []}
     ]
   end
 
@@ -99,7 +99,7 @@ defmodule Nebulex.MixProject do
 
   defp package do
     [
-      name: :nebulex,
+      name: :knock_nebulex,
       maintainers: ["Carlos Bolanos"],
       licenses: ["MIT"],
       links: %{
@@ -112,7 +112,7 @@ defmodule Nebulex.MixProject do
 
   defp docs do
     [
-      main: "Nebulex",
+      main: "Knock.Nebulex",
       source_ref: "v#{@version}",
       canonical: "https://hexdocs.pm/nebulex",
       source_url: @source_url,
@@ -135,39 +135,39 @@ defmodule Nebulex.MixProject do
         group_for_function("Observable API")
       ],
       groups_for_modules: [
-        # Nebulex,
-        # Nebulex.Cache,
-        # Nebulex.Event,
-        # Nebulex.Event.CacheEntryEvent,
+        # Knock.Nebulex,
+        # Knock.Nebulex.Cache,
+        # Knock.Nebulex.Event,
+        # Knock.Nebulex.Event.CacheEntryEvent,
 
         "Caching decorators": [
-          Nebulex.Caching,
-          Nebulex.Caching.Decorators,
-          Nebulex.Caching.Decorators.Context
+          Knock.Nebulex.Caching,
+          Knock.Nebulex.Caching.Decorators,
+          Knock.Nebulex.Caching.Decorators.Context
         ],
         "Adapter specification": [
-          Nebulex.Adapter,
-          Nebulex.Adapter.KV,
-          Nebulex.Adapter.Queryable,
-          Nebulex.Adapter.Transaction,
-          Nebulex.Adapter.Info,
-          Nebulex.Adapter.Observable
+          Knock.Nebulex.Adapter,
+          Knock.Nebulex.Adapter.KV,
+          Knock.Nebulex.Adapter.Queryable,
+          Knock.Nebulex.Adapter.Transaction,
+          Knock.Nebulex.Adapter.Info,
+          Knock.Nebulex.Adapter.Observable
         ],
         "Built-in adapters": [
-          Nebulex.Adapters.Nil
+          Knock.Nebulex.Adapters.Nil
         ],
         "Built-in info implementation": [
-          Nebulex.Adapters.Common.Info,
-          Nebulex.Adapters.Common.Info.Stats
+          Knock.Nebulex.Adapters.Common.Info,
+          Knock.Nebulex.Adapters.Common.Info.Stats
         ],
         "Telemetry handlers": [
-          Nebulex.Telemetry.CacheEntryHandler,
-          Nebulex.Telemetry.CacheStatsCounterHandler
+          Knock.Nebulex.Telemetry.CacheEntryHandler,
+          Knock.Nebulex.Telemetry.CacheStatsCounterHandler
         ],
         Utilities: [
-          Nebulex.Telemetry,
-          Nebulex.Time,
-          Nebulex.Utils
+          Knock.Nebulex.Telemetry,
+          Knock.Nebulex.Time,
+          Knock.Nebulex.Utils
         ]
       ]
     ]

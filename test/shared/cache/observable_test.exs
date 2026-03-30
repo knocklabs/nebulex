@@ -1,12 +1,12 @@
-defmodule Nebulex.Cache.ObservableTest do
-  import Nebulex.CacheCase
+defmodule Knock.Nebulex.Cache.ObservableTest do
+  import Knock.Nebulex.CacheCase
 
   deftests do
     import ExUnit.CaptureLog
-    import Nebulex.CacheCase, only: [t_sleep: 1, assert_eventually: 1]
+    import Knock.Nebulex.CacheCase, only: [t_sleep: 1, assert_eventually: 1]
 
-    alias Nebulex.Adapter
-    alias Nebulex.Event.CacheEntryEvent
+    alias Knock.Nebulex.Adapter
+    alias Knock.Nebulex.Event.CacheEntryEvent
 
     describe "register_event_listener!/2" do
       setup do
@@ -340,7 +340,7 @@ defmodule Nebulex.Cache.ObservableTest do
       test "error: listener is already registered", %{cache: cache, listener: listener} do
         :ok = cache.register_event_listener!(listener)
 
-        assert_raise Nebulex.Error,
+        assert_raise Knock.Nebulex.Error,
                      ~r"another cache entry listener with the same ID already exists",
                      fn ->
                        cache.register_event_listener!(listener)
@@ -374,10 +374,10 @@ defmodule Nebulex.Cache.ObservableTest do
       end
 
       test "error: listener processing exception" do
-        assert_raise Nebulex.Error,
+        assert_raise Knock.Nebulex.Error,
                      ~r"cache entry event listener failed when processing an event",
                      fn ->
-                       raise Nebulex.Error,
+                       raise Knock.Nebulex.Error,
                          reason: :event_listener_error,
                          original: %RuntimeError{},
                          event: :test,
@@ -409,7 +409,7 @@ defmodule Nebulex.Cache.ObservableTest do
     def my_filter_with_meta(_event), do: true
 
     defp test_expired? do
-      Application.get_env(:nebulex, :observable_test_expired, true)
+      Application.get_env(:knock_nebulex, :observable_test_expired, true)
     end
   end
 end

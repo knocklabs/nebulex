@@ -3,7 +3,7 @@
 This guide will walk you through creating a custom Nebulex adapter. We will
 start by creating a new project, making tests pass, and then implementing a
 simple in-memory adapter. It will be roughly based on
-[`Nebulex.Adapters.Redis`](https://github.com/elixir-nebulex/nebulex_redis_adapter/)
+[`Knock.Nebulex.Adapters.Redis`](https://github.com/elixir-nebulex/nebulex_redis_adapter/)
 so you can consult this repo as an example.
 
 ## Mix Project
@@ -57,9 +57,9 @@ defmodule NebulexMemoryAdapter.MixProject do
 
   defp nebulex_dep do
     if path = System.get_env("NEBULEX_PATH") do
-      {:nebulex, "~> #{@nbx_vsn}", path: path}
+      {:knock_nebulex, "~> #{@nbx_vsn}", path: path}
     else
-      {:nebulex, "~> #{@nbx_vsn}"}
+      {:knock_nebulex, "~> #{@nbx_vsn}"}
     end
   end
 
@@ -95,12 +95,12 @@ Before we start implementing our custom adapter, let's set up our tests.
 
 First, it's important to understand which adapter behaviors we need to implement:
 
-- **`Nebulex.Adapter.KV`** - Required. Provides key-value operations like `get`,
+- **`Knock.Nebulex.Adapter.KV`** - Required. Provides key-value operations like `get`,
   `put`, `delete`, etc. All adapters must implement this.
-- **`Nebulex.Adapter.Queryable`** - Optional. Provides query-based operations like
+- **`Knock.Nebulex.Adapter.Queryable`** - Optional. Provides query-based operations like
   `delete_all`, `get_all` with filters, etc. Recommended for most adapters.
-- **`Nebulex.Adapter.Transaction`**, **`Nebulex.Adapter.Info`**,
-  **`Nebulex.Adapter.Observable`** - Other optional behaviors for advanced features
+- **`Knock.Nebulex.Adapter.Transaction`**, **`Knock.Nebulex.Adapter.Info`**,
+  **`Knock.Nebulex.Adapter.Observable`** - Other optional behaviors for advanced features
   (documented separately in the Adapter API).
 
 We'll implement `KV` and `Queryable` in this guide. Let's start by defining a
@@ -108,7 +108,7 @@ cache that uses our adapter in `test/support/test_cache.ex`
 
 ```elixir
 defmodule NebulexMemoryAdapter.TestCache do
-  use Nebulex.Cache,
+  use Knock.Nebulex.Cache,
     otp_app: :nebulex_memory_adapter,
     adapter: NebulexMemoryAdapter
 end
@@ -127,8 +127,8 @@ defmodule NebulexMemoryAdapter.CacheTest do
 
   defmacro __using__(_opts) do
     quote do
-      use Nebulex.Cache.KVTest
-      use Nebulex.Cache.QueryableTest
+      use Knock.Nebulex.Cache.KVTest
+      use Knock.Nebulex.Cache.QueryableTest
     end
   end
 end
@@ -161,23 +161,23 @@ Now let's run the tests to see what we need to implement.
 ```console
 mix test
 == Compilation error in file test/support/test_cache.ex ==
-** (ArgumentError) expected :adapter option given to Nebulex.Cache to list Nebulex.Adapter as a behaviour
-    (nebulex 2.4.2) lib/nebulex/cache/supervisor.ex:50: Nebulex.Cache.Supervisor.compile_config/1
+** (ArgumentError) expected :adapter option given to Knock.Nebulex.Cache to list Knock.Nebulex.Adapter as a behaviour
+    (nebulex 2.4.2) lib/nebulex/cache/supervisor.ex:50: Knock.Nebulex.Cache.Supervisor.compile_config/1
     test/support/test_cache.ex:2: (module)
 ```
 
-Looks like our adapter needs to implement the `Nebulex.Adapter` behaviour.
-Luckily, it's just 2 callbacks that we can copy from `Nebulex.Adapters.Nil`
+Looks like our adapter needs to implement the `Knock.Nebulex.Adapter` behaviour.
+Luckily, it's just 2 callbacks that we can copy from `Knock.Nebulex.Adapters.Nil`
 
 ```elixir
 # lib/nebulex_memory_adapter.ex
 defmodule NebulexMemoryAdapter do
-  @behaviour Nebulex.Adapter
+  @behaviour Knock.Nebulex.Adapter
 
-  @impl Nebulex.Adapter
+  @impl Knock.Nebulex.Adapter
   defmacro __before_compile__(_env), do: :ok
 
-  @impl Nebulex.Adapter
+  @impl Knock.Nebulex.Adapter
   def init(_opts) do
     child_spec = Supervisor.child_spec({Agent, fn -> :ok end}, id: {Agent, 1})
     {:ok, child_spec, %{}}
@@ -190,7 +190,7 @@ Another try
 ```console
 mix test
 == Compilation error in file test/nebulex_memory_adapter_test.exs ==
-** (CompileError) test/nebulex_memory_adapter_test.exs:3: module Nebulex.Cache.KVTest is not loaded and could not be found
+** (CompileError) test/nebulex_memory_adapter_test.exs:3: module Knock.Nebulex.Cache.KVTest is not loaded and could not be found
     (elixir 1.13.2) expanding macro: Kernel.use/1
     test/nebulex_memory_adapter_test.exs:3: NebulexMemoryAdapterTest (module)
     expanding macro: NebulexMemoryAdapter.CacheTest.__using__/1
@@ -204,7 +204,7 @@ Let's address this in `test/test_helper.exs`
 
 ```elixir
 # Nebulex dependency path
-nbx_dep_path = Mix.Project.deps_paths()[:nebulex]
+nbx_dep_path = Mix.Project.deps_paths()[:knock_nebulex]
 
 for file <- File.ls!("#{nbx_dep_path}/test/support"), file != "test_cache.ex" do
   Code.require_file("#{nbx_dep_path}/test/support/" <> file, __DIR__)
@@ -252,31 +252,31 @@ Finished in 0.2 seconds (0.2s async, 0.00s sync)
 ## Implementation
 
 Now that we have our failing tests, we can implement the adapter. We'll build
-this step-by-step, starting with the base `Nebulex.Adapter` behavior, then
-implementing the required `Nebulex.Adapter.KV` behavior, and finally adding
-the optional `Nebulex.Adapter.Queryable` behavior.
+this step-by-step, starting with the base `Knock.Nebulex.Adapter` behavior, then
+implementing the required `Knock.Nebulex.Adapter.KV` behavior, and finally adding
+the optional `Knock.Nebulex.Adapter.Queryable` behavior.
 
 > **Note**: For a complete reference implementation with all the correct callback
 > signatures and production patterns, consult the
-> [Nebulex.TestAdapter](https://github.com/elixir-nebulex/nebulex/blob/main/test/support/test_adapter.exs)
+> [Knock.Nebulex.TestAdapter](https://github.com/elixir-nebulex/nebulex/blob/main/test/support/test_adapter.exs)
 > source code. This guide shows the essential structure and flow, but you'll want
 > to refer to TestAdapter for exact implementations.
 
-### Step 1: Implement Nebulex.Adapter
+### Step 1: Implement Knock.Nebulex.Adapter
 
-First, let's implement the base `Nebulex.Adapter` behavior with the two required
+First, let's implement the base `Knock.Nebulex.Adapter` behavior with the two required
 callbacks:
 
 ```elixir
 defmodule NebulexMemoryAdapter do
-  @behaviour Nebulex.Adapter
+  @behaviour Knock.Nebulex.Adapter
 
-  import Nebulex.Utils
+  import Knock.Nebulex.Utils
 
-  @impl Nebulex.Adapter
+  @impl Knock.Nebulex.Adapter
   defmacro __before_compile__(_env), do: :ok
 
-  @impl Nebulex.Adapter
+  @impl Knock.Nebulex.Adapter
   def init(_opts) do
     child_spec = Supervisor.child_spec({Agent, fn -> %{} end}, id: {Agent, 1})
 
@@ -290,69 +290,69 @@ Now test to see if the adapter loads:
 ```console
 mix test
 == Compilation error in file test/support/test_cache.ex ==
-** (ArgumentError) expected :adapter option given to Nebulex.Cache to list Nebulex.Adapter.KV as a behaviour
-    (nebulex 3.0.0) lib/nebulex/cache/supervisor.ex:50: Nebulex.Cache.Supervisor.compile_config/1
+** (ArgumentError) expected :adapter option given to Knock.Nebulex.Cache to list Knock.Nebulex.Adapter.KV as a behaviour
+    (nebulex 3.0.0) lib/nebulex/cache/supervisor.ex:50: Knock.Nebulex.Cache.Supervisor.compile_config/1
     test/support/test_cache.ex:2: (module)
 ```
 
-The error tells us we need to implement `Nebulex.Adapter.KV`.
+The error tells us we need to implement `Knock.Nebulex.Adapter.KV`.
 
-### Step 2: Implement Nebulex.Adapter.KV (Required)
+### Step 2: Implement Knock.Nebulex.Adapter.KV (Required)
 
-The `Nebulex.Adapter.KV` behavior is the core requirement. It provides all
+The `Knock.Nebulex.Adapter.KV` behavior is the core requirement. It provides all
 key-value operations like `fetch`, `put`, `delete`, and more. Here's a complete
 implementation:
 
 ```elixir
 defmodule NebulexMemoryAdapter do
-  @behaviour Nebulex.Adapter
-  @behaviour Nebulex.Adapter.KV
+  @behaviour Knock.Nebulex.Adapter
+  @behaviour Knock.Nebulex.Adapter.KV
 
-  import Nebulex.Utils
+  import Knock.Nebulex.Utils
 
-  @impl Nebulex.Adapter
+  @impl Knock.Nebulex.Adapter
   defmacro __before_compile__(_env), do: :ok
 
-  @impl Nebulex.Adapter
+  @impl Knock.Nebulex.Adapter
   def init(_opts) do
     child_spec = Supervisor.child_spec({Agent, fn -> %{} end}, id: {Agent, 1})
 
     {:ok, child_spec, %{}}
   end
 
-  ## Nebulex.Adapter.KV Implementation
+  ## Knock.Nebulex.Adapter.KV Implementation
 
-  @impl Nebulex.Adapter.KV
+  @impl Knock.Nebulex.Adapter.KV
   def fetch(adapter_meta, key, _opts) do
     wrap_ok Agent.get(adapter_meta.pid, &Map.get(&1, key))
   end
 
-  @impl Nebulex.Adapter.KV
+  @impl Knock.Nebulex.Adapter.KV
   def put(adapter_meta, key, value, on_write, ttl, _opts) do
     Agent.update(adapter_meta.pid, &Map.put(&1, key, value))
     {:ok, true}
   end
 
-  @impl Nebulex.Adapter.KV
+  @impl Knock.Nebulex.Adapter.KV
   def put_all(adapter_meta, entries, on_write, ttl, _opts) do
     entries = Map.new(entries)
     Agent.update(adapter_meta.pid, &Map.merge(&1, entries))
     {:ok, true}
   end
 
-  @impl Nebulex.Adapter.KV
+  @impl Knock.Nebulex.Adapter.KV
   def delete(adapter_meta, key, _opts) do
     wrap_ok Agent.update(adapter_meta.pid, &Map.delete(&1, key))
   end
 
-  @impl Nebulex.Adapter.KV
+  @impl Knock.Nebulex.Adapter.KV
   def take(adapter_meta, key, _opts) do
     value = Agent.get(adapter_meta.pid, &Map.get(&1, key))
     delete(adapter_meta, key, [])
     {:ok, value}
   end
 
-  @impl Nebulex.Adapter.KV
+  @impl Knock.Nebulex.Adapter.KV
   def update_counter(adapter_meta, key, amount, default, ttl, _opts) do
     Agent.update(adapter_meta.pid, fn state ->
       Map.update(state, key, default + amount, fn v -> v + amount end)
@@ -361,22 +361,22 @@ defmodule NebulexMemoryAdapter do
     wrap_ok Agent.get(adapter_meta.pid, &Map.get(&1, key))
   end
 
-  @impl Nebulex.Adapter.KV
+  @impl Knock.Nebulex.Adapter.KV
   def has_key?(adapter_meta, key, _opts) do
     wrap_ok Agent.get(adapter_meta.pid, &Map.has_key?(&1, key))
   end
 
-  @impl Nebulex.Adapter.KV
+  @impl Knock.Nebulex.Adapter.KV
   def ttl(_adapter_meta, _key, _opts) do
     {:ok, nil}
   end
 
-  @impl Nebulex.Adapter.KV
+  @impl Knock.Nebulex.Adapter.KV
   def expire(_adapter_meta, _key, _ttl, _opts) do
     {:ok, true}
   end
 
-  @impl Nebulex.Adapter.KV
+  @impl Knock.Nebulex.Adapter.KV
   def touch(_adapter_meta, _key, _opts) do
     {:ok, true}
   end
@@ -403,38 +403,38 @@ Finished in 5.7 seconds (5.7s async, 0.00s sync)
 ```
 
 Great progress! We've gone from 54 failures to 10. The remaining failures are for
-the `execute/3` function, which is part of the `Nebulex.Adapter.Queryable` behavior.
+the `execute/3` function, which is part of the `Knock.Nebulex.Adapter.Queryable` behavior.
 
-### Step 3: Add Nebulex.Adapter.Queryable (Optional)
+### Step 3: Add Knock.Nebulex.Adapter.Queryable (Optional)
 
-Now we'll add the optional `Nebulex.Adapter.Queryable` behavior to support
+Now we'll add the optional `Knock.Nebulex.Adapter.Queryable` behavior to support
 query operations like `delete_all`, `get_all`, and `stream`. Here's the complete
 implementation of both `KV` and `Queryable` that passes all tests:
 
 ```elixir
 defmodule NebulexMemoryAdapter do
-  @behaviour Nebulex.Adapter
-  @behaviour Nebulex.Adapter.KV
-  @behaviour Nebulex.Adapter.Queryable
+  @behaviour Knock.Nebulex.Adapter
+  @behaviour Knock.Nebulex.Adapter.KV
+  @behaviour Knock.Nebulex.Adapter.Queryable
 
-  import Nebulex.Utils
+  import Knock.Nebulex.Utils
 
-  @impl Nebulex.Adapter
+  @impl Knock.Nebulex.Adapter
   defmacro __before_compile__(_env), do: :ok
 
-  @impl Nebulex.Adapter
+  @impl Knock.Nebulex.Adapter
   def init(_opts) do
     child_spec = Supervisor.child_spec({Agent, fn -> %{} end}, id: {Agent, 1})
 
     {:ok, child_spec, %{}}
   end
 
-  @impl Nebulex.Adapter.KV
+  @impl Knock.Nebulex.Adapter.KV
   def fetch(adapter_meta, key, _opts) do
     wrap_ok Agent.get(adapter_meta.pid, &Map.get(&1, key))
   end
 
-  @impl Nebulex.Adapter.KV
+  @impl Knock.Nebulex.Adapter.KV
   def put(adapter_meta, key, value, ttl, op, opts)
 
   def put(adapter_meta, key, value, ttl, :put_new, opts) do
@@ -464,7 +464,7 @@ defmodule NebulexMemoryAdapter do
     {:ok, true}
   end
 
-  @impl Nebulex.Adapter.KV
+  @impl Knock.Nebulex.Adapter.KV
   def put_all(adapter_meta, entries, ttl, op, opts)
 
   def put_all(adapter_meta, entries, ttl, :put_new, opts) do
@@ -486,12 +486,12 @@ defmodule NebulexMemoryAdapter do
     {:ok, true}
   end
 
-  @impl Nebulex.Adapter.KV
+  @impl Knock.Nebulex.Adapter.KV
   def delete(adapter_meta, key, _opts) do
     wrap_ok Agent.update(adapter_meta.pid, &Map.delete(&1, key))
   end
 
-  @impl Nebulex.Adapter.KV
+  @impl Knock.Nebulex.Adapter.KV
   def take(adapter_meta, key, _opts) do
     value = get(adapter_meta, key, [])
 
@@ -500,7 +500,7 @@ defmodule NebulexMemoryAdapter do
     {:ok, value}
   end
 
-  @impl Nebulex.Adapter.KV
+  @impl Knock.Nebulex.Adapter.KV
   def update_counter(adapter_meta, key, amount, _ttl, default, _opts) do
     Agent.update(adapter_meta.pid, fn state ->
       Map.update(state, key, default + amount, fn v -> v + amount end)
@@ -509,27 +509,27 @@ defmodule NebulexMemoryAdapter do
     wrap_ok get(adapter_meta, key, [])
   end
 
-  @impl Nebulex.Adapter.KV
+  @impl Knock.Nebulex.Adapter.KV
   def has_key?(adapter_meta, key, _opts) do
     wrap_ok Agent.get(adapter_meta.pid, &Map.has_key?(&1, key))
   end
 
-  @impl Nebulex.Adapter.KV
+  @impl Knock.Nebulex.Adapter.KV
   def ttl(_adapter_meta, _key, _opts) do
     {:ok, nil}
   end
 
-  @impl Nebulex.Adapter.KV
+  @impl Knock.Nebulex.Adapter.KV
   def expire(_adapter_meta, _key, _ttl, _opts) do
     {:ok, true}
   end
 
-  @impl Nebulex.Adapter.KV
+  @impl Knock.Nebulex.Adapter.KV
   def touch(_adapter_meta, _key, _opts) do
     {:ok, true}
   end
 
-  @impl Nebulex.Adapter.Queryable
+  @impl Knock.Nebulex.Adapter.Queryable
   def execute(adapter_meta, query_meta, _opts) do
     do_execute(adapter_meta.pid, query_meta)
   end
@@ -558,7 +558,7 @@ defmodule NebulexMemoryAdapter do
     |> wrap_ok()
   end
 
-  @impl Nebulex.Adapter.Queryable
+  @impl Knock.Nebulex.Adapter.Queryable
   def stream(adapter_meta, query_meta, _opts) do
     do_stream(adapter_meta.pid, query_meta)
   end
@@ -580,7 +580,7 @@ defmodule NebulexMemoryAdapter do
   end
 
   def do_stream(_pid_, query) do
-    wrap_error Nebulex.QueryError, query: query
+    wrap_error Knock.Nebulex.QueryError, query: query
   end
 end
 ```
@@ -606,13 +606,13 @@ Now that you have a working adapter, you can:
 
 ## Recommended Reading
 
-- **[Nebulex.TestAdapter](https://github.com/elixir-nebulex/nebulex/blob/main/test/support/test_adapter.exs)**
+- **[Knock.Nebulex.TestAdapter](https://github.com/elixir-nebulex/nebulex/blob/main/test/support/test_adapter.exs)**
   - The canonical reference implementation used by Nebulex itself for testing
   - Shows correct callback signatures and implementations for KV and Queryable
   - Reference for handling TTL, entry validation, and error cases
   - Best for understanding exact callback parameters and return values
 
-- **[Nebulex.Adapters.Local](https://github.com/elixir-nebulex/nebulex/blob/main/lib/nebulex/adapters/local)**
+- **[Knock.Nebulex.Adapters.Local](https://github.com/elixir-nebulex/nebulex/blob/main/lib/nebulex/adapters/local)**
   - Built-in adapter implementation with all optional behaviors
   - Shows advanced features like Info API, Transaction support, and Observable
   - Reference for optimizations and production-ready patterns
@@ -622,6 +622,6 @@ Now that you have a working adapter, you can:
   - Shows how to integrate with an external backend
   - Reference for handling complex operations with actual persistence
 
-- **[Adapter Behavior Documentation](`Nebulex.Adapter`)**
+- **[Adapter Behavior Documentation](`Knock.Nebulex.Adapter`)**
   - Complete API reference for all adapter behaviors and callbacks
   - Detailed specifications for KV, Queryable, Transaction, Info, and Observable

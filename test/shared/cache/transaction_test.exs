@@ -1,5 +1,5 @@
-defmodule Nebulex.Cache.TransactionTest do
-  import Nebulex.CacheCase
+defmodule Knock.Nebulex.Cache.TransactionTest do
+  import Knock.Nebulex.CacheCase
 
   deftests do
     describe "transaction/2" do

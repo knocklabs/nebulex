@@ -1,17 +1,17 @@
-defmodule Nebulex.CacheTestCase do
+defmodule Knock.Nebulex.CacheTestCase do
   @moduledoc """
   Shared Tests
   """
 
   @default_tests [
-    Nebulex.Cache.KVTest,
-    Nebulex.Cache.KVExpirationTest,
-    Nebulex.Cache.KVPropTest,
-    Nebulex.Cache.QueryableTest,
-    Nebulex.Cache.QueryableExpirationTest,
-    Nebulex.Cache.QueryableQueryErrorTest,
-    Nebulex.Cache.TransactionTest,
-    Nebulex.Cache.ObservableTest
+    Knock.Nebulex.Cache.KVTest,
+    Knock.Nebulex.Cache.KVExpirationTest,
+    Knock.Nebulex.Cache.KVPropTest,
+    Knock.Nebulex.Cache.QueryableTest,
+    Knock.Nebulex.Cache.QueryableExpirationTest,
+    Knock.Nebulex.Cache.QueryableQueryErrorTest,
+    Knock.Nebulex.Cache.TransactionTest,
+    Knock.Nebulex.Cache.ObservableTest
   ]
 
   defmacro __using__(opts) do

@@ -1,11 +1,11 @@
-defmodule Nebulex.CacheCase do
+defmodule Knock.Nebulex.CacheCase do
   @moduledoc false
 
   use ExUnit.CaseTemplate
 
   import Mimic, only: [stub: 3]
 
-  alias Nebulex.Telemetry
+  alias Knock.Nebulex.Telemetry
 
   @doc false
   defmacro deftests(do: block) do
@@ -107,8 +107,8 @@ defmodule Nebulex.CacheCase do
 
   @doc false
   def t_sleep(timeout) do
-    if Application.get_env(:nebulex, :sleep_mock, false) do
-      Nebulex.Time
+    if Application.get_env(:knock_nebulex, :sleep_mock, false) do
+      Knock.Nebulex.Time
       |> stub(:now, fn -> System.system_time(:millisecond) + timeout end)
 
       timeout
@@ -202,7 +202,7 @@ defmodule Nebulex.CacheCase do
 
   @doc false
   def assert_error_module(ctx, error_module) do
-    expected_error_module = Map.get(ctx, :error_module, Nebulex.Error)
+    expected_error_module = Map.get(ctx, :error_module, Knock.Nebulex.Error)
 
     assert error_module == expected_error_module
   end
