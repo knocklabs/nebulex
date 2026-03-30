@@ -19,7 +19,7 @@ defmodule Mix.Tasks.Nbx.Gen.Cache do
   use Mix.Task
 
   import Mix.Generator
-  import Mix.Nebulex
+  import Mix.KnockNebulex
 
   alias Mix.Project
 
@@ -72,7 +72,7 @@ defmodule Mix.Tasks.Nbx.Gen.Cache do
           ]
 
     For more information about configuration options, check
-    adapters documentation and Nebulex.Cache shared options.
+    adapters documentation and Knock.Nebulex.Cache shared options.
     """)
   end
 
@@ -89,9 +89,9 @@ defmodule Mix.Tasks.Nbx.Gen.Cache do
 
   embed_template(:cache, """
   defmodule <%= inspect @mod %> do
-    use Nebulex.Cache,
+    use Knock.Nebulex.Cache,
       otp_app: <%= inspect @app %>,
-      adapter: Nebulex.Adapters.Local
+      adapter: Knock.Nebulex.Adapters.Local
   end
   """)
 

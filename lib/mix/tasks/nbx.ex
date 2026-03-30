@@ -23,9 +23,9 @@ defmodule Mix.Tasks.Nbx do
   end
 
   defp general do
-    _ = Application.ensure_all_started(:nebulex)
+    _ = Application.ensure_all_started(:knock_nebulex)
 
-    Mix.shell().info("Nebulex v#{Nebulex.vsn()}")
+    Mix.shell().info("Knock Nebulex v#{Knock.Nebulex.vsn()}")
     Mix.shell().info("In-Process and Distributed Cache Toolkit for Elixir.")
     Mix.shell().info("\nAvailable tasks:\n")
     Help.run(["--search", "nbx."])

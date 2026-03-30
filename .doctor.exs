@@ -1,12 +1,12 @@
 %Doctor.Config{
   ignore_modules: [
-    Nebulex.Cache.Helpers,
-    Nebulex.Cache.Options,
-    Nebulex.Cache.QuerySpec,
-    Nebulex.Caching.Options,
-    Nebulex.Adapter.Transaction.Options,
-    Nebulex.Adapters.Nil.Options,
-    Nebulex.Dialyzer.CachingDecorators
+    Knock.Nebulex.Cache.Helpers,
+    Knock.Nebulex.Cache.Options,
+    Knock.Nebulex.Cache.QuerySpec,
+    Knock.Nebulex.Caching.Options,
+    Knock.Nebulex.Adapter.Transaction.Options,
+    Knock.Nebulex.Adapters.Nil.Options,
+    Knock.Nebulex.Dialyzer.CachingDecorators
   ],
   ignore_paths: [],
   min_module_doc_coverage: 40,

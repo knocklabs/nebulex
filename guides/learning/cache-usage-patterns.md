@@ -1,7 +1,7 @@
 # Cache Usage Patterns with Caching Decorators
 
 Nebulex supports several common cache access patterns via
-[caching decorators](`Nebulex.Caching.Decorators`).
+[caching decorators](`Knock.Nebulex.Caching.Decorators`).
 
 > The following documentation about caching patterns is based on
 > [EHCache Docs][EHCache]
@@ -51,7 +51,7 @@ end
 
 ```elixir
 defmodule MyApp.Users do
-  use Nebulex.Caching, cache: MyApp.Cache
+  use Knock.Nebulex.Caching, cache: MyApp.Cache
 
   # Cache-aside: automatically check cache, load from SoR if miss
   @decorate cacheable(key: user_id)
@@ -140,7 +140,7 @@ as follows:
 
 ```elixir
 defmodule MyApp.Example do
-  use Nebulex.Caching, cache: MyApp.Cache
+  use Knock.Nebulex.Caching, cache: MyApp.Cache
 
   @ttl :timer.hours(1)
 
@@ -179,7 +179,7 @@ it using `cache_evict`.
 
 ```elixir
 defmodule MyApp.Example do
-  use Nebulex.Caching, cache: MyApp.Cache
+  use Knock.Nebulex.Caching, cache: MyApp.Cache
 
   # When the data is written to the SoR, it is updated in the cache
   @decorate cache_put(key: something)

@@ -1,8 +1,8 @@
-defmodule Nebulex.Cache.QueryableTest do
-  import Nebulex.CacheCase
+defmodule Knock.Nebulex.Cache.QueryableTest do
+  import Knock.Nebulex.CacheCase
 
   deftests do
-    import Nebulex.CacheCase
+    import Knock.Nebulex.CacheCase
 
     describe "get_all!/2" do
       test "ok: matches all cached entries", %{cache: cache} do

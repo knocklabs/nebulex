@@ -1,9 +1,9 @@
-defmodule Nebulex.Dialyzer.CachingDecorators do
+defmodule Knock.Nebulex.Dialyzer.CachingDecorators do
   @moduledoc false
 
-  alias Nebulex.Caching.Decorators
+  alias Knock.Nebulex.Caching.Decorators
 
-  use Nebulex.Caching,
+  use Knock.Nebulex.Caching,
     default_key_generator: &__MODULE__.generate_key/1,
     cache: Cache,
     on_error: :raise,

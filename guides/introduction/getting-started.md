@@ -33,7 +33,7 @@ to your `mix.exs` file by updating the `deps` definition:
 ```elixir
 defp deps do
   [
-    {:nebulex, "~> 3.0"},
+    {:knock_nebulex, "~> 3.0"},
     # Use the official local cache adapter
     {:nebulex_local, "~> 3.0"},
     # Required for caching decorators (recommended)
@@ -49,14 +49,14 @@ end
 To provide more flexibility and load only the needed dependencies, Nebulex makes
 all dependencies optional, including the adapters. For example:
 
-  * **For enabling [declarative decorator-based caching](`Nebulex.Caching`)**:
+  * **For enabling [declarative decorator-based caching](`Knock.Nebulex.Caching`)**:
     Add `:decorator` to the dependency list.
 
   * **For enabling Telemetry events**: Add `:telemetry` to the dependency list.
     See the [Info API guide](info-api.md) for monitoring cache stats and
     metrics.
 
-  * **For intensive workloads** when using `Nebulex.Adapters.Local` adapter:
+  * **For intensive workloads** when using `Knock.Nebulex.Adapters.Local` adapter:
     You may want to use `:shards` as the backend for partitioned ETS tables.
     In such cases, add `:shards` to the dependency list.
 
@@ -103,14 +103,14 @@ The `Blog.Cache` module is defined in `lib/blog/cache.ex` by our
 
 ```elixir
 defmodule Blog.Cache do
-  use Nebulex.Cache,
+  use Knock.Nebulex.Cache,
     otp_app: :blog,
-    adapter: Nebulex.Adapters.Local
+    adapter: Knock.Nebulex.Adapters.Local
 end
 ```
 
 This module is what we'll use to interact with the cache. It uses the
-`Nebulex.Cache` module and expects the `:otp_app` option. The `otp_app`
+`Knock.Nebulex.Cache` module and expects the `:otp_app` option. The `otp_app`
 tells Nebulex which Elixir application to look for cache configuration in.
 In this case, we've specified that it is the `:blog` application where Nebulex
 can find that configuration, so Nebulex will use the configuration that was
@@ -191,7 +191,7 @@ iex> Blog.Cache.put_new(new_user.id, new_user, ttl: 900)
 iex> Blog.Cache.put_new(new_user.id, new_user)
 {:ok, false}
 
-# Same as the previous one but raises `Nebulex.Error` in case of error
+# Same as the previous one but raises `Knock.Nebulex.Error` in case of error
 iex> Blog.Cache.put_new!(new_user.id, new_user)
 false
 ```
@@ -209,7 +209,7 @@ iex> Blog.Cache.put_new(existing_user.id, existing_user)
 iex> Blog.Cache.replace(existing_user.id, existing_user, ttl: 900)
 {:ok, true}
 
-# same as previous one but raises `Nebulex.Error` in case of error
+# same as previous one but raises `Knock.Nebulex.Error` in case of error
 iex> Blog.Cache.replace!(existing_user.id, existing_user)
 true
 
@@ -231,7 +231,7 @@ iex> Blog.Cache.put_new_all(new_users)
 iex> Blog.Cache.put_new_all(new_users)
 {:ok, false}
 
-# same as previous one but raises `Nebulex.Error` in case of error
+# same as previous one but raises `Knock.Nebulex.Error` in case of error
 iex> Blog.Cache.put_new_all!(new_users)
 false
 ```
@@ -248,7 +248,7 @@ iex> user1.id
 1
 
 # If the key doesn't exist an error tuple is returned
-iex> {:error, %Nebulex.KeyError{} = e} = Blog.Cache.fetch("unknown")
+iex> {:error, %Knock.Nebulex.KeyError{} = e} = Blog.Cache.fetch("unknown")
 iex> e.key
 "unknown"
 
@@ -355,13 +355,13 @@ iex> Blog.Cache.fetch_or_store("user:123", fn ->
 iex> Blog.Cache.fetch_or_store("user:999", fn ->
 ...>   {:error, "User not found"}
 ...> end)
-{:error, %Nebulex.Error{reason: "User not found"}}
+{:error, %Knock.Nebulex.Error{reason: "User not found"}}
 
 # Subsequent calls will still execute the function since errors aren't cached
 iex> Blog.Cache.fetch_or_store("user:999", fn ->
 ...>   {:error, "User not found"}
 ...> end)
-{:error, %Nebulex.Error{reason: "User not found"}}
+{:error, %Knock.Nebulex.Error{reason: "User not found"}}
 ```
 
 ### Get or Store
@@ -433,7 +433,7 @@ iex> Blog.Cache.incr!(:my_counter)
 ## Deleting entries
 
 We've now covered inserting, reading and updating entries. Now let's see how to
-delete an entry using Nebulex.
+delete an entry using Knock.Nebulex.
 
 ```elixir
 iex> Blog.Cache.delete(1)
@@ -454,11 +454,11 @@ iex> Blog.Cache.take(1)
 {:ok, _entry}
 
 # If the key doesn't exist an error tuple is returned
-iex> {:error, %Nebulex.KeyError{} = e} = Blog.Cache.take("nonexistent")
+iex> {:error, %Knock.Nebulex.KeyError{} = e} = Blog.Cache.take("nonexistent")
 iex> e.key
 "nonexistent"
 
-# same as previous one but raises `Nebulex.KeyError`
+# same as previous one but raises `Knock.Nebulex.KeyError`
 iex> Blog.Cache.take!("nonexistent")
 ```
 
@@ -472,7 +472,7 @@ iex> Blog.Cache.ttl(1)
 {:ok, :infinity}
 
 # If the key doesn't exist an error tuple is returned
-iex> {:error, %Nebulex.KeyError{} = e} = Blog.Cache.ttl("nonexistent")
+iex> {:error, %Knock.Nebulex.KeyError{} = e} = Blog.Cache.ttl("nonexistent")
 iex> e.key
 "nonexistent"
 
@@ -528,10 +528,10 @@ _all_entries
 iex> Blog.Cache.get_all!(in: [1, 2])
 _fetched_entries
 
-# built-in queries in `Nebulex.Adapters.Local` adapter
+# built-in queries in `Knock.Nebulex.Adapters.Local` adapter
 iex> Blog.Cache.get_all() #=> Equivalent to Blog.Cache.get_all(query: nil)
 
-# if we are using `Nebulex.Adapters.Local` adapter, the stored entry
+# if we are using `Knock.Nebulex.Adapters.Local` adapter, the stored entry
 # is a tuple `{:entry, key, value, touched, ttl}`, then the match spec
 # could be something like:
 iex> spec = [{{:_, :"$1", :"$2", :_, :_}, [{:>, :"$1", 10}], [{{:"$1", :"$2"}}]}]
@@ -620,7 +620,7 @@ iex> stream = Blog.Cache.stream!()
 iex> Enum.to_list(stream)
 _all_matched
 
-# using `Nebulex.Adapters.Local` adapter
+# using `Knock.Nebulex.Adapters.Local` adapter
 iex> spec = [{{:entry, :"$1", :"$2", :_, :_}, [{:<, :"$1", 3}], [{{:"$1", :"$2"}}]}]
 iex> {:ok, stream} = Blog.Cache.stream(query: spec)
 iex> Enum.to_list(stream)
@@ -656,7 +656,7 @@ iex> info
   server: %{
     nbx_version: "3.0.0",
     cache_module: "Blog.Cache",
-    cache_adapter: "Nebulex.Adapters.Local",
+    cache_adapter: "Knock.Nebulex.Adapters.Local",
     cache_name: "Blog.Cache",
     cache_pid: #PID<0.111.0>
   },
@@ -680,7 +680,7 @@ iex> Blog.Cache.info!(:server)
 %{
   nbx_version: "3.0.0",
   cache_module: "Blog.Cache",
-  cache_adapter: "Nebulex.Adapters.Local",
+  cache_adapter: "Knock.Nebulex.Adapters.Local",
   cache_name: "Blog.Cache",
   cache_pid: #PID<0.111.0>
 }
@@ -691,7 +691,7 @@ iex> Blog.Cache.info!([:server, :stats])
   server: %{
     nbx_version: "3.0.0",
     cache_module: "Blog.Cache",
-    cache_adapter: "Nebulex.Adapters.Local",
+    cache_adapter: "Knock.Nebulex.Adapters.Local",
     cache_name: "Blog.Cache",
     cache_pid: #PID<0.111.0>
   },
@@ -733,7 +733,7 @@ iex> Blog.Cache.register_event_listener(&Blog.Cache.EventHandler.handle/1)
 iex> Blog.Cache.put("user:123", %{id: 123, name: "John Doe"})
 :ok
 
-#=> Cache Event: %Nebulex.Event.CacheEntryEvent{
+#=> Cache Event: %Knock.Nebulex.Event.CacheEntryEvent{
 #=>   cache: Blog.Cache,
 #=>   name: Blog.Cache,
 #=>   type: :inserted,
@@ -745,7 +745,7 @@ iex> Blog.Cache.put("user:123", %{id: 123, name: "John Doe"})
 iex> Blog.Cache.replace("user:123", %{id: 123, name: "John Doe", email: "john@example.com"})
 {:ok, %{id: 123, name: "John Doe", email: "john@example.com"}}
 
-#=> Cache Event: %Nebulex.Event.CacheEntryEvent{
+#=> Cache Event: %Knock.Nebulex.Event.CacheEntryEvent{
 #=>   cache: Blog.Cache,
 #=>   type: :updated,
 #=>   target: {:key, "user:123"},
@@ -756,7 +756,7 @@ iex> Blog.Cache.replace("user:123", %{id: 123, name: "John Doe", email: "john@ex
 iex> Blog.Cache.delete("user:123")
 :ok
 
-#=> Cache Event: %Nebulex.Event.CacheEntryEvent{
+#=> Cache Event: %Knock.Nebulex.Event.CacheEntryEvent{
 #=>   cache: Blog.Cache,
 #=>   type: :deleted,
 #=>   target: {:key, "user:123"},
@@ -902,7 +902,7 @@ iex> Blog.Cache.register_event_listener(
 iex> Blog.Cache.put("post:789", %{title: "Hello World"})
 :ok
 #=> [production] blog_api: inserted event for {:key, "post:789"}
-#=> DEBUG: %Nebulex.Event.CacheEntryEvent{...}
+#=> DEBUG: %Knock.Nebulex.Event.CacheEntryEvent{...}
 ```
 
 ### Managing Event Listeners
@@ -965,14 +965,14 @@ end
 
 ### Partitioned Cache
 
-Nebulex provides the adapter `Nebulex.Adapters.Partitioned`, which allows you to
+Nebulex provides the adapter `Knock.Nebulex.Adapters.Partitioned`, which allows you to
 set up a partitioned cache topology. First of all, we need to add
 `:nebulex_distributed` to the dependencies in the `mix.exs`:
 
 ```elixir
 defp deps do
   [
-    {:nebulex, "~> 3.0"},
+    {:knock_nebulex, "~> 3.0"},
     # Use the official local cache adapter
     {:nebulex_local, "~> 3.0"},
     # Use the official distributed cache adapters
@@ -996,27 +996,27 @@ mix nbx.gen.cache -c Blog.PartitionedCache
 
 This command generates the cache module in `lib/blog/partitioned_cache.ex`
 along with the initial configuration in `config/config.exs`. By default,
-the generated cache uses `Nebulex.Adapters.Local`. To use the partitioned
+the generated cache uses `Knock.Nebulex.Adapters.Local`. To use the partitioned
 adapter, update the generated cache module as follows:
 
 ```elixir
 defmodule Blog.PartitionedCache do
-  use Nebulex.Cache,
+  use Knock.Nebulex.Cache,
     otp_app: :blog,
-    adapter: Nebulex.Adapters.Partitioned
+    adapter: Knock.Nebulex.Adapters.Partitioned
 end
 ```
 
-The partitioned adapter uses `Nebulex.Adapters.Local` as primary storage
+The partitioned adapter uses `Knock.Nebulex.Adapters.Local` as primary storage
 by default. To use a different adapter, provide the
 `adapter_opts: [primary_storage_adapter: ...]` option:
 
 ```elixir
 defmodule Blog.PartitionedCache do
-  use Nebulex.Cache,
+  use Knock.Nebulex.Cache,
     otp_app: :blog,
-    adapter: Nebulex.Adapters.Partitioned,
-    adapter_opts: [primary_storage_adapter: Nebulex.Adapters.Cachex]
+    adapter: Knock.Nebulex.Adapters.Partitioned,
+    adapter_opts: [primary_storage_adapter: Knock.Nebulex.Adapters.Cachex]
 end
 ```
 
@@ -1057,7 +1057,7 @@ Now we are ready to start using our partitioned cache!
 
 #### Timeout option
 
-The `Nebulex.Adapters.Partitioned` supports `:timeout` option, it is a value in
+The `Knock.Nebulex.Adapters.Partitioned` supports `:timeout` option, it is a value in
 milliseconds for the command that will be executed.
 
 ```elixir
@@ -1066,16 +1066,16 @@ iex> Blog.PartitionedCache.get("foo", timeout: 10)
 
 # when the command's call timed out an error is returned
 iex> Blog.PartitionedCache.put("foo", "bar", timeout: 10)
-#=> {:error, %Nebulex.Error{reason: :timeout}}
+#=> {:error, %Knock.Nebulex.Error{reason: :timeout}}
 ```
 
 To learn more about how partitioned cache works, please check
-`Nebulex.Adapters.Partitioned` documentation, and we also recommend checking the
+`Knock.Nebulex.Adapters.Partitioned` documentation, and we also recommend checking the
 [partitioned cache example](https://github.com/elixir-nebulex/nebulex_examples/tree/main/partitioned_cache).
 
 ### Multilevel Cache
 
-Nebulex also provides the adapter `Nebulex.Adapters.Multilevel`, which allows you to
+Nebulex also provides the adapter `Knock.Nebulex.Adapters.Multilevel`, which allows you to
 set up a multi-level caching hierarchy. The adapter is also included in the
 `:nebulex_distributed` dependency.
 
@@ -1085,24 +1085,24 @@ adapter requires defining the cache levels manually. Create the cache module
 
 ```elixir
 defmodule Blog.NearCache do
-  use Nebulex.Cache,
+  use Knock.Nebulex.Cache,
     otp_app: :blog,
-    adapter: Nebulex.Adapters.Multilevel
+    adapter: Knock.Nebulex.Adapters.Multilevel
 
   ## Cache Levels
 
   # L1 cache (local)
   defmodule L1 do
-    use Nebulex.Cache,
+    use Knock.Nebulex.Cache,
       otp_app: :blog,
-      adapter: Nebulex.Adapters.Local
+      adapter: Knock.Nebulex.Adapters.Local
   end
 
   # L2 cache (partitioned cache)
   defmodule L2 do
-    use Nebulex.Cache,
+    use Knock.Nebulex.Cache,
       otp_app: :blog,
-      adapter: Nebulex.Adapters.Partitioned
+      adapter: Knock.Nebulex.Adapters.Partitioned
   end
 end
 ```
@@ -1164,7 +1164,7 @@ iex> Blog.NearCache.get!("foo")
 ```
 
 To learn more about how multilevel-cache works, please check
-`Nebulex.Adapters.Multilevel` documentation, and we also recommend checking the
+`Knock.Nebulex.Adapters.Multilevel` documentation, and we also recommend checking the
 [near cache example](https://github.com/elixir-nebulex/nebulex_examples/tree/main/near_cache).
 
 ## Next

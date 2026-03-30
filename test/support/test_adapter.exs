@@ -1,4 +1,4 @@
-defmodule Nebulex.TestAdapter do
+defmodule Knock.Nebulex.TestAdapter do
   @moduledoc """
   Adapter for testing purposes.
   """
@@ -8,7 +8,7 @@ defmodule Nebulex.TestAdapter do
 
     defstruct [:value, :touched, :exp]
 
-    alias Nebulex.Time
+    alias Knock.Nebulex.Time
 
     @doc false
     def new(value, ttl \\ :infinity, touched \\ Time.now()) do
@@ -27,24 +27,24 @@ defmodule Nebulex.TestAdapter do
   end
 
   # Provide Cache Implementation
-  @behaviour Nebulex.Adapter
-  @behaviour Nebulex.Adapter.KV
-  @behaviour Nebulex.Adapter.Queryable
-  @behaviour Nebulex.Adapter.Transaction
+  @behaviour Knock.Nebulex.Adapter
+  @behaviour Knock.Nebulex.Adapter.KV
+  @behaviour Knock.Nebulex.Adapter.Queryable
+  @behaviour Knock.Nebulex.Adapter.Transaction
 
   # Inherit default info implementation
-  use Nebulex.Adapters.Common.Info
+  use Knock.Nebulex.Adapters.Common.Info
 
   # Inherit default observable implementation
-  use Nebulex.Adapter.Observable
+  use Knock.Nebulex.Adapter.Observable
 
-  import Nebulex.Utils
+  import Knock.Nebulex.Utils
 
-  alias Nebulex.Adapters.Common.Info.Stats
+  alias Knock.Nebulex.Adapters.Common.Info.Stats
   alias __MODULE__.{Entry, KV}
-  alias Nebulex.Time
+  alias Knock.Nebulex.Time
 
-  ## Nebulex.Adapter
+  ## Knock.Nebulex.Adapter
 
   @impl true
   defmacro __before_compile__(_env), do: :ok
@@ -75,7 +75,7 @@ defmodule Nebulex.TestAdapter do
     {:ok, child_spec, metadata}
   end
 
-  ## Nebulex.Adapter.KV
+  ## Knock.Nebulex.Adapter.KV
 
   @impl true
   def fetch(adapter_meta, key, _opts) do
@@ -107,7 +107,7 @@ defmodule Nebulex.TestAdapter do
     if Time.now() >= exp do
       :ok = delete(adapter_meta, key, [])
 
-      wrap_error Nebulex.KeyError, key: key, reason: :expired
+      wrap_error Knock.Nebulex.KeyError, key: key, reason: :expired
     else
       {:ok, entry}
     end
@@ -116,7 +116,7 @@ defmodule Nebulex.TestAdapter do
   defp validate_ttl(:error, key, adapter_meta) do
     cache = adapter_meta[:name] || adapter_meta[:cache]
 
-    wrap_error Nebulex.KeyError, cache: cache, key: key, reason: :not_found
+    wrap_error Knock.Nebulex.KeyError, cache: cache, key: key, reason: :not_found
   end
 
   @impl true
@@ -201,7 +201,7 @@ defmodule Nebulex.TestAdapter do
     GenServer.call(adapter_meta.pid, {:touch, key})
   end
 
-  ## Nebulex.Adapter.Queryable
+  ## Knock.Nebulex.Adapter.Queryable
 
   @impl true
   def execute(adapter_meta, query_meta, opts)
@@ -240,10 +240,10 @@ defmodule Nebulex.TestAdapter do
   end
 
   defp assert_query({:q, q}) do
-    raise Nebulex.QueryError, query: q
+    raise Knock.Nebulex.QueryError, query: q
   end
 
-  ## Nebulex.Adapter.Info
+  ## Knock.Nebulex.Adapter.Info
 
   @impl true
   def info(adapter_meta, spec, opts) do
@@ -269,7 +269,7 @@ defmodule Nebulex.TestAdapter do
     end
   end
 
-  ## Nebulex.Adapter.Transaction
+  ## Knock.Nebulex.Adapter.Transaction
 
   @impl true
   def transaction(%{cache: cache, pid: pid} = adapter_meta, fun, opts) do
@@ -321,7 +321,7 @@ defmodule Nebulex.TestAdapter do
         end
 
       false ->
-        wrap_error Nebulex.Error,
+        wrap_error Knock.Nebulex.Error,
           reason: :transaction_aborted,
           cache: name,
           nodes: nodes,
@@ -361,15 +361,15 @@ defmodule Nebulex.TestAdapter do
   end
 end
 
-defmodule Nebulex.TestAdapter.KV do
+defmodule Knock.Nebulex.TestAdapter.KV do
   @moduledoc false
 
   use GenServer
 
-  import Nebulex.Utils, only: [wrap_error: 2]
+  import Knock.Nebulex.Utils, only: [wrap_error: 2]
 
-  alias Nebulex.TestAdapter.Entry
-  alias Nebulex.Time
+  alias Knock.Nebulex.TestAdapter.Entry
+  alias Knock.Nebulex.Time
 
   ## Internals
 
@@ -470,7 +470,7 @@ defmodule Nebulex.TestAdapter.KV do
       ) do
     case Map.fetch(map, key) do
       {:ok, %{value: value}} when not is_integer(value) ->
-        error = wrap_error Nebulex.Error, reason: :badarith, cache: nil
+        error = wrap_error Knock.Nebulex.Error, reason: :badarith, cache: nil
 
         {:reply, error, map}
 

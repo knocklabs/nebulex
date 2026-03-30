@@ -1,5 +1,5 @@
-defmodule Nebulex.Cache.KVTest do
-  import Nebulex.CacheCase
+defmodule Knock.Nebulex.Cache.KVTest do
+  import Knock.Nebulex.CacheCase
 
   deftests do
     describe "put/3" do
@@ -43,7 +43,7 @@ defmodule Nebulex.Cache.KVTest do
       end
 
       test "with dynamic_cache raises an exception", %{cache: cache} do
-        assert_raise Nebulex.CacheNotFoundError, ~r"unable to find cache:", fn ->
+        assert_raise Knock.Nebulex.CacheNotFoundError, ~r"unable to find cache:", fn ->
           cache.put!(:invalid, "foo", "bar", [])
         end
       end
@@ -258,7 +258,7 @@ defmodule Nebulex.Cache.KVTest do
       end
 
       test "returns {:error, :not_found} if key does not exist in cache", %{cache: cache} do
-        assert {:error, %Nebulex.KeyError{key: "non-existent"}} = cache.fetch("non-existent")
+        assert {:error, %Knock.Nebulex.KeyError{key: "non-existent"}} = cache.fetch("non-existent")
       end
     end
 
@@ -274,7 +274,7 @@ defmodule Nebulex.Cache.KVTest do
       test "raises when the key does not exist in cache", %{cache: cache} do
         msg = ~r/key "non-existent" not found/
 
-        assert_raise Nebulex.KeyError, msg, fn ->
+        assert_raise Knock.Nebulex.KeyError, msg, fn ->
           cache.fetch!("non-existent")
         end
       end
@@ -358,7 +358,7 @@ defmodule Nebulex.Cache.KVTest do
           :ok = cache.put(x, x)
 
           assert cache.take(x) == {:ok, x}
-          assert {:error, %Nebulex.KeyError{key: ^x}} = cache.take(x)
+          assert {:error, %Knock.Nebulex.KeyError{key: ^x}} = cache.take(x)
         end
       end
 
@@ -375,8 +375,8 @@ defmodule Nebulex.Cache.KVTest do
       end
 
       test "returns nil if the key does not exist in cache", %{cache: cache} do
-        assert {:error, %Nebulex.KeyError{key: :non_existent}} = cache.take(:non_existent)
-        assert {:error, %Nebulex.KeyError{key: nil}} = cache.take(nil)
+        assert {:error, %Knock.Nebulex.KeyError{key: :non_existent}} = cache.take(:non_existent)
+        assert {:error, %Knock.Nebulex.KeyError{key: nil}} = cache.take(nil)
       end
     end
 
@@ -390,7 +390,7 @@ defmodule Nebulex.Cache.KVTest do
       test "raises when the key does not exist in cache", %{cache: cache} do
         msg = ~r/key "non-existent" not found/
 
-        assert_raise Nebulex.KeyError, msg, fn ->
+        assert_raise Knock.Nebulex.KeyError, msg, fn ->
           cache.take!("non-existent")
         end
       end
@@ -439,12 +439,12 @@ defmodule Nebulex.Cache.KVTest do
 
       test "raises because the cache is not started" do
         defmodule UnknownCache do
-          use Nebulex.Cache,
-            otp_app: :nebulex,
-            adapter: Nebulex.Adapters.Nil
+          use Knock.Nebulex.Cache,
+            otp_app: :knock_nebulex,
+            adapter: Knock.Nebulex.Adapters.Nil
         end
 
-        assert_raise Nebulex.CacheNotFoundError, ~r"unable to find cache:", fn ->
+        assert_raise Knock.Nebulex.CacheNotFoundError, ~r"unable to find cache:", fn ->
           UnknownCache.update!("error", 1, &String.to_integer/1)
         end
       end

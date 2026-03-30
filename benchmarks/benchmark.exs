@@ -4,9 +4,9 @@ _ = Application.start(:telemetry)
 
 defmodule Cache do
   @moduledoc false
-  use Nebulex.Cache,
-    otp_app: :nebulex,
-    adapter: Nebulex.Adapters.Nil
+  use Knock.Nebulex.Cache,
+    otp_app: :knock_nebulex,
+    adapter: Knock.Nebulex.Adapters.Nil
 end
 
 benchmarks = %{

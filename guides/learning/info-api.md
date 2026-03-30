@@ -6,10 +6,10 @@ responsible for implementing the Info API and are also free to add the
 information specification keys they want. Therefore, it is highly recommended
 to review the adapter's documentation you're using.
 
-> See `c:Nebulex.Cache.info/2` for more information.
+> See `c:Knock.Nebulex.Cache.info/2` for more information.
 
-Nebulex also provides a simple implementation `Nebulex.Adapters.Common.Info`,
-which is used by the `Nebulex.Adapters.Local` adapter. This implementation uses
+Nebulex also provides a simple implementation `Knock.Nebulex.Adapters.Common.Info`,
+which is used by the `Knock.Nebulex.Adapters.Local` adapter. This implementation uses
 a Telemetry handler to aggregate the stats and keep them updated, therefore,
 it requires `:telemetry` to be available.
 
@@ -23,9 +23,9 @@ Let's define our cache:
 
 ```elixir
 defmodule MyApp.Cache do
-  use Nebulex.Cache,
+  use Knock.Nebulex.Cache,
     otp_app: :my_app,
-    adapter: Nebulex.Adapters.Local
+    adapter: Knock.Nebulex.Adapters.Local
 end
 ```
 
@@ -48,7 +48,7 @@ iex> MyApp.Cache.info!()
   server: %{
     nbx_version: "3.0.0",
     cache_module: "MyApp.Cache",
-    cache_adapter: "Nebulex.Adapters.Local",
+    cache_adapter: "Knock.Nebulex.Adapters.Local",
     cache_name: "MyApp.Cache",
     cache_pid: #PID<0.111.0>
   },
@@ -255,9 +255,9 @@ cache size:
 
 ```elixir
 defmodule MyApp.Cache do
-  use Nebulex.Cache,
+  use Knock.Nebulex.Cache,
     otp_app: :my_app,
-    adapter: Nebulex.Adapters.Local
+    adapter: Knock.Nebulex.Adapters.Local
 
   def dispatch_cache_size do
     :telemetry.execute(
@@ -419,7 +419,7 @@ last_value("my_app.cache.info.stats.hits",
 
 ## Adapter-Specific Information
 
-The Info API is adapter-specific. While `Nebulex.Adapters.Local` provides the stats
+The Info API is adapter-specific. While `Knock.Nebulex.Adapters.Local` provides the stats
 and memory metrics shown in this guide, other adapters may provide different information keys.
 
 Always consult your adapter's documentation for:
