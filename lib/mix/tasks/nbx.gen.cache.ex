@@ -1,4 +1,4 @@
-defmodule Mix.Tasks.Nbx.Gen.Cache do
+defmodule Mix.Tasks.Knock.Nbx.Gen.Cache do
   @shortdoc "Generates a new cache"
 
   @moduledoc """
