@@ -1,4 +1,4 @@
-defmodule Mix.Tasks.Nbx do
+defmodule Mix.Tasks.Knock.Nbx do
   @shortdoc "Prints Nebulex help information"
 
   @moduledoc """
